@@ -273,57 +273,66 @@ $(function(){
 <div id="container">
 	<div id="mainSlideBnr">
 		
-			<div class="bx-wrapper" style="max-width: 2600px;">
-			<div class="bx-viewport" style="width: 100%; overflow: hidden; position: relative; height: 500px;">
-			<ul class="slider" style="width: 415%; position: relative; transition-duration: 0s; transform: translate3d(-2600px, 0px, 0px);">
-			<li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
-						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
-							
-								<img src="./수우미_files/abcd.jpeg" alt="">
-							
-							
-						</a>
-					</li><li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
-						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
-							
-								<img src="./수우미_files/abcd.jpeg" alt="">
-							
-							
-						</a>
-					</li>
-				
-					<li style="float: left; list-style: none; position: relative; width: 1300px;">
-						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
-							
-								<img src="./수우미_files/abcd.jpeg" alt="">
-							
-							
-						</a>
-					</li>
-				
-					<li style="float: left; list-style: none; position: relative; width: 1300px;">
-						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
-							
-								<img src="./수우미_files/Vabcd.jpeg" alt="">
-							
-							
-						</a>
-					</li>
-				
-			<li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
-						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
-							
-								<img src="./수우미_files/abcd.jpeg" alt="">
-							
-							
-						</a>
-					</li><li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
-						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
-							
-								<img src="./수우미_files/abcd.jpeg" alt="">
-							
-							
-						</a>
+<style>
+/* 리셋 CSS */
+* {margin:0;padding:0;box-sizing:border-box;}
+ul, li {list-style:none;}
+
+/* 슬라이드 Style */
+.slidebox {max-width:1000px;margin:0 auto;}
+.slidebox .slidelist {white-space:nowrap;font-size:0;overflow:hidden;}
+.slidebox .slidelist .slideitem {position:relative;display:inline-block;vertical-align:middle;width:100%;transition:all 1s;}
+.slidebox .slidelist .slideitem > a {display:block;width:auto;position:relative;}
+.slidebox .slidelist .slideitem > a img {max-width:100%;}
+.slidebox .slidelist .slideitem > a label {position:absolute;top:50%;transform:translateY(-50%);padding:20px;border-radius:50%;cursor:pointer;}
+.slidebox .slidelist .slideitem > a label.prev {left:20px;background:#333 url('./img/left-arrow.png') center center / 50% no-repeat;}
+.slidebox .slidelist .slideitem > a label.next {right:20px;background:#333 url('./img/right-arrow.png') center center / 50% no-repeat;}
+
+
+[name="slide"] {display:none;}
+#slide01:checked ~ .slidelist .slideitem {transform:translateX(0);animation:slide01 15s infinite;}
+#slide02:checked ~ .slidelist .slideitem {transform:translateX(-100%);animation:slide02 15s infinite;}
+
+@keyframes slide01 {
+	0% {left:0%;}
+	49% {left:0%;}
+	50% {left:-100%}
+	99% {left:-100%;}
+	100% {left:0;}
+}
+
+@keyframes slide02 {
+	0% {left:0%;}
+	49% {left:0%;}
+	50% {left:100;}
+	99% {left:100;}
+	100% {left:0%;}
+}
+
+
+</style>
+
+
+<div class="slidebox">
+	<input type="radio" name="slide" id="slide01" checked>
+	<input type="radio" name="slide" id="slide02">
+	<ul class="slidelist">
+		<li class="slideitem">
+			<a>
+				<label for="slide02" class="prev"></label>
+				<img src="./img/Main_01.png">
+				<label for="slide02" class="next"></label>
+			</a>
+		</li>
+		<li class="slideitem">
+			<a>
+				<label for="slide01" class="prev"></label>
+				<img src="./img/Main_02.png">
+				<label for="slide01" class="next"></label>
+			</a>
+		</li>
+	</ul>
+</div>
 					</li></ul></div></div>
 			<div class="btn_arrow"><div class="aa" style="opacity: 0.7;"></div><div class="bb" style="opacity: 0.7;"></div></div>
 		
