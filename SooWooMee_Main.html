@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!-- saved from url=(0042)https://www.googoofun.com/web/main/main.do -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Google Tag Manager -->
+<script type="text/javascript" async="" src="./수우미_files/js"></script><script type="text/javascript" async="" src="./수우미_files/analytics.js.다운로드"></script><script async="" src="./수우미_files/gtm.js.다운로드"></script><script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N4MZCGQ');</script>
+<!-- End Google Tag Manager -->
+
+<title>구구펀</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- header -->
+
+	<link rel="canonical" href="http://www.googoofun.com/">
+	<title>구구펀</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+  	<meta name="description" content="방탄소년단, 엑소 등 콘서트티켓팅, 팬미팅, 티켓팅연습게임과 티켓예매 서비스 제공 ">
+	<meta property="og:type" content="www.googoofun.com">
+	<meta property="og:title" content="구구펀 티켓팅이 즐거워 지는곳">
+	<meta property="og:description" content="여기를 눌러 링크를 확인하세요 ">
+	<meta property="og:image" content="">
+	<meta property="og:url" content="https://www.googoofun.com">
+
+    <link type="text/css" rel="stylesheet" href="./수우미_files/common.css">
+    <link type="text/css" rel="stylesheet" href="./수우미_files/layout.css">
+    
+    	<link type="text/css" rel="stylesheet" href="./수우미_files/main.css">
+    
+   
+    
+	    
+	    
+		    <script type="text/javascript" src="./수우미_files/jquery-3.2.1.min.js.다운로드"></script>
+		    <script type="text/javascript" src="./수우미_files/jquery-ui.min.js.다운로드"></script>
+			<script type="text/javascript" src="./수우미_files/placeholders.min.js.다운로드"></script>
+	    
+    
+    <script type="text/javascript" src="./수우미_files/googoofun.ui.js.다운로드"></script>
+	<script type="text/javascript" src="./수우미_files/googoofun.js.다운로드"></script><script src="./수우미_files/moment.js.다운로드"></script>
+    <script type="text/javascript" src="./수우미_files/jquery.bxslider.min.js.다운로드"></script>
+<!-- common script -->
+<!-- //end common script -->
+<script>
+
+$(document).ready(function(){
+	//세션 생성
+	$.fn.session.init({
+		  loginId : ''
+		, imgServer : 'http://www.googoofun.com/nas'
+		, certifiedYn : ''
+	});
+	
+	//배너팝업 footer에 이동
+	//$('.banner-link').funcBanner({});
+	
+	//좋아요 이벤트
+	like = new $.funcLikes();
+	
+	//게시물 신고 이벤트
+	report = new $.funcReport();
+	
+	//SNS공유 이벤트
+	snsShare = new $.funcSnsShare();
+	snsShare.init();
+	
+	//배송지관리 이벤트
+	adres = new $.funcAdres();
+	adres.init({});
+});
+
+function fn_bannerOpen(){
+	$.ajax({     
+        type: "get", 
+        url: "/ticket/ajax/tBannerList.do;jsessionid=FB9FAA773C96704BA7639A7BE3A230C2",
+        data: '',   
+        async: false,
+        dataType: "json", 
+        success: function(json) {   
+        	 if(json.code != -1){
+        		$("#banner").show();
+    		 	$("[name='bf']").remove();  
+      	   	 	var obj = json.banner;
+      	   	 	var src = "";
+     		 	src = '<img name="bf" src="'+obj.Images.size360x240+'">';
+     	
+     		 	src += '<p name="bf" class="msg">';
+     		 	src += obj.ContentTitle;
+     		 	src += '</p>'; 
+     		    
+     		 	src += '<p name="bf" class="summary">';
+     		 	/* src += '게임 5판이 추가 되었습니다. '; */
+     		 	src += '</p>'; 
+     		   
+				$("#bnLink").val(obj.Link);
+      	   		$("#bnf").append(src);
+	      	   	$("#sbtn2").hide();
+	    		$("#sbtn1").show();
+        	}else{
+        		$("#sbtn1").hide();
+        		$("#sbtn2").show();
+        		getTime();
+        	}
+        	 
+        },   
+        error: function(){ 
+            //alert('에러 발생');
+            location.href = "/web/login/login.do";
+            
+        }
+    });
+}
+</script>
+
+<script async="" src="./수우미_files/f.txt"></script>
+<script>
+	/* 주석풀면 구글 광고 나옴
+     (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-9656465064742710",
+          enable_page_level_ads: true
+     });
+	*/
+</script>
+
+
+
+<meta http-equiv="origin-trial" content="A7CQXglZzTrThjGTBEn1rWTxHOEtkWivwzgea+NjyardrwlieSjVuyG44PkYgIPGs8Q9svD8sF3Yedn0BBBjXAkAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A3vKT9yxRPjmXN3DpIiz58f5JykcWHjUo/W7hvmtjgh9jPpQgem9VbADiNovG8NkO6mRmk70Kex8/KUqAYWVWAEAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A4A26Ymj79UVY7C7JGUS4BG1s7MdcDokAQf/RP0paks+RoTYbXHxceT/5L4iKcsleFCngi75YfNRGW2+SpVv1ggAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="As0hBNJ8h++fNYlkq8cTye2qDLyom8NddByiVytXGGD0YVE+2CEuTCpqXMDxdhOMILKoaiaYifwEvCRlJ/9GcQ8AAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="AgRYsXo24ypxC89CJanC+JgEmraCCBebKl8ZmG7Tj5oJNx0cmH0NtNRZs3NB5ubhpbX/bIt7l2zJOSyO64NGmwMAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="></head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N4MZCGQ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Nav -->
+
+
+<div id="header">
+	<div class="w1300">		
+		<h1 class="logo"><a href="https://www.googoofun.com/web/main/main.do"><img src="./수우미_files/SooWooMee_SS.png" alt="구구펀"></a></h1>
+		<ul class="lnb clear">
+			<li><a href="https://www.googoofun.com/web/event/eventList.do">수강신청연습</a></li>
+			<li><a href="https://www.googoofun.com/web/practice/practiceList.do">강의정보</a></li>
+			<li>
+				<a href="https://www.googoofun.com/web/enter/openList.do">커뮤니티</a>
+				<div>
+					<p><a href="https://www.googoofun.com/web/enter/openList.do">티켓오픈</a></p>
+					<p><a href="https://www.googoofun.com/web/enter/magazineList.do">매거진</a></p>
+					<p><a href="https://www.googoofun.com/web/enter/mediaList.do">미디어</a></p>
+				</div>
+			</li>
+			<li><a href="https://www.googoofun.com/web/community/communityList.do">고객센터</a></li>
+			<!-- 
+			
+				
+				
+			<li><a href="/web/ticket/ticketList.do">티켓예매</a></li>
+				
+			
+			 -->
+			
+				
+					<li><a href="http://www.mycontv.com/web/index.do">     </a></li>
+				
+				
+						
+			
+		</ul>
+		<div class="log">
+			
+				
+					<a href="https://www.googoofun.com/web/login/login.do">나의시간표</a>
+				
+				
+			
+		</div>
+			
+				
+				
+		<div class="my"><a href="https://www.googoofun.com/web/mypage/myInfo.do">마이페이지</a></div>
+				
+			
+		<div class="lang">
+			<a href="https://www.googoofun.com/web/main/main.do#;">LANGUAGE</a>
+			<ul>
+				<li><a href="https://www.googoofun.com/web/main/main.do#;">· KOREAN</a></li>
+				<li><a href="https://www.googoofun.com/web/main/main.do#;">· ENGLISH</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- //end Nav -->
+<div id="container">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="./수우미_files/jquery.cookie.js.다운로드"></script>
+<script type="text/javascript">
+$(function(){
+	$('.hashtag a').on('click', function(){
+		var _url = $(this).data('url');
+		var _tag = $(this).data('value');
+		if($.stringFunc.isExistVal(_url)){
+			location.href = _url +'?srchcnd=3&srchwrd='+ encodeURI(encodeURIComponent(_tag));
+		}
+	});
+	
+	$.fn.funcPopup.open();
+});
+</script>
+<form name="mainform" id="mainform" method="post" action="https://www.googoofun.com/web/main/main.do">
+<span itemscope="" itemtype="https://schema.org/Organization">
+<link itemprop="url" href="https://www.googoofun.com/">
+<a itemprop="sameAs" href="https://www.facebook.com/googoofun/"></a>
+<a itemprop="sameAs" href="https://twitter.com/googoofun"></a>
+<a itemprop="sameAs" href="https://blog.naver.com/googoofunkorea"></a>
+</span>
+
+<div id="container">
+	<div id="mainSlideBnr">
+		
+			<div class="bx-wrapper" style="max-width: 2600px;">
+			<div class="bx-viewport" style="width: 100%; overflow: hidden; position: relative; height: 500px;">
+			<ul class="slider" style="width: 415%; position: relative; transition-duration: 0s; transform: translate3d(-2600px, 0px, 0px);">
+			<li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
+						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
+							
+								<img src="./수우미_files/abcd.jpeg" alt="">
+							
+							
+						</a>
+					</li><li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
+						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
+							
+								<img src="./수우미_files/abcd.jpeg" alt="">
+							
+							
+						</a>
+					</li>
+				
+					<li style="float: left; list-style: none; position: relative; width: 1300px;">
+						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
+							
+								<img src="./수우미_files/abcd.jpeg" alt="">
+							
+							
+						</a>
+					</li>
+				
+					<li style="float: left; list-style: none; position: relative; width: 1300px;">
+						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
+							
+								<img src="./수우미_files/Vabcd.jpeg" alt="">
+							
+							
+						</a>
+					</li>
+				
+			<li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
+						<a href="javascript:;" class="banner-link" data-target-url="https://kpopclick.com" data-pop-yn="Y">
+							
+								<img src="./수우미_files/abcd.jpeg" alt="">
+							
+							
+						</a>
+					</li><li style="float: left; list-style: none; position: relative; width: 1300px;" class="bx-clone">
+						<a href="javascript:;" class="banner-link" data-target-url="http://www.googoofun.com/web/practice/yesMain.do" data-pop-yn="N">
+							
+								<img src="./수우미_files/abcd.jpeg" alt="">
+							
+							
+						</a>
+					</li></ul></div></div>
+			<div class="btn_arrow"><div class="aa" style="opacity: 0.7;"></div><div class="bb" style="opacity: 0.7;"></div></div>
+		
+	<div class="bx-controls bx-has-pager bx-has-controls-direction"><div class="bx-pager bx-default-pager"><div class="bx-pager-item"><a href="https://www.googoofun.com/web/main/main.do" data-slide-index="0" class="bx-pager-link active">1</a></div><div class="bx-pager-item"><a href="https://www.googoofun.com/web/main/main.do" data-slide-index="1" class="bx-pager-link">2</a></div></div><div class="bx-controls-direction"><a class="bx-prev" href=".../SooWooMee_Main.do">Prev</a><a class="bx-next" href=".../SooWooMee_Main.do">Next</a></div></div></div>
+	<script type="text/javascript">
+		var mySlider = $('.slider').bxSlider({
+			auto:true,
+			minSlides: 3,
+			maxSlides: 10,
+			moveSlides: 1,
+			slideWidth: 1300,
+			responsive:true
+		});
+		$(document).on('click','.bx-next, .bx-prev, .bx-pager-link',function() {mySlider.stopAuto();mySlider.startAuto();});
+	</script>
+	
+	
+		<div class="hashtag w1300">
+			<div>
+				
+					<a href="javascript:;" data-url="/web/cscenter/noticeList.do" data-value="bts">#bts</a>
+				
+					<a href="javascript:;" data-url="/web/enter/openList.do" data-value="방탄소년단">#방탄소년단</a>
+				
+					<a href="javascript:;" data-url="/web/enter/openList.do" data-value="콘서트">#콘서트</a>
+				
+					<a href="javascript:;" data-url="/web/event/eventList.do" data-value="축하해요">#축하해요</a>
+				
+					<a href="javascript:;" data-url="/web/event/eventList.do" data-value="아미">#아미</a>
+				
+					<a href="javascript:;" data-url="/web/event/eventList.do" data-value="티켓팅연습">#티켓팅연습</a>
+				
+			</div>
+		</div>
+
+	
+	
+	
+	
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    .ticket_practice {
+        background-image: url("practice_bg.gif");
+        background-repeat: no-repeat;
+        background-position: center; top :-10px
+        background-size: cover;
+        text-align: center;
+        padding: 0px;
+    }
+</style>
+</head>
+<body>
+    <div class="ticket_practice">
+        <div class="w1300">
+            <h2 class="mtit">수강신청을 돕는 콘텐츠</h2>
+            <h3>다양한 콘텐츠로 누구보다 완벽하게 수강신청을 준비해보세요!!</h3>
+            <p class="stxt">(텍스트)</p>
+            <ul>
+                <li>
+                    <div class="thumb"><a href="https://www.googoofun.com/web/practice/atStep1.do"><img src="./수우미_files/grim1.png" alt=""></a></div>
+                    <div class="info">
+                        <span class="comp">수강신청연습</span><br> 01 
+                        <span class="cate">/ 연습으로 실전 감각을 익혀보자!</span><br><br>
+                    </div>
+                </li>
+                <li>
+                    <div class="thumb"><a href="https://www.googoofun.com/web/practice/yesMain.do"><img src="./수우미_files/grim2.png" alt=""></a></div>
+                    <div class="info">
+                        <span class="comp">매크로</span><br> 02
+                        <span class="cate">/ 더 이상 잃을 게 없다. 대리 신청으로 진행시켜!</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="thumb"><a href="https://www.googoofun.com/web/practice/itpMain.do"><img src="./수우미_files/grim3.png" alt=""></a></div>
+                    <div class="info">
+                        <span class="comp">알고리즘 추천강의</span><br> 03
+                        <span class="cate">/ 미쳤습니까 휴면? 제가 추천해드리죠.</span><br><br>
+                    </div>
+                </li>
+                <li>
+                    <div class="thumb"><a href="https://www.googoofun.com/web/practice/cancelStep1.do"><img src="./수우미_files/grim4.png" alt=""></a></div>
+                    <div class="info">
+                        <span class="comp">전공별 과목 커리큘럼</span><br> 04 
+                        <span class="cate">/ 잠깐! 전공 과목 확인하셨나요?</span><br><br>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+
+
+	<div class="news w1300 clear">
+		<h2 class="mtit">수우미 소식</h2>
+		<dl class="event">
+			<dt>튜토리얼 영상</dt>
+			<dd>
+			<ul class="rtab">
+				<li class="fst on"><a href="javascript:;">수강신청 안내 영상</a></li>
+				<li class="lst"><a href="javascript:;">사이트 안내 영상</a></li>
+			</ul>
+			<div class="rview rv1" style="display: none;">
+					<iframe width="610" height="270" src="https://www.youtube.com/embed/Zi4rBD9kS-A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+	
+			</div>
+			<div class="rview rv2" style="display: none;">
+				
+				
+					<iframe width="610" height="270" src="https://www.youtube.com/embed/4ZwqloPeasM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				
+			</div>
+			</dd>
+		</dl>
+		
+		<dl class="comm">
+			<dt>커뮤니티 <a href="https://www.googoofun.com/web/community/communityList.do">더보기</a></dt>
+			<dd>
+			<ul>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11859">수강신청 같이 할 사람
+						
+						</a>
+						<span>2023.04.20</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11858">나만 아는 수강신청 꿀팁
+						
+						</a>
+						<span>2023.04.03</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11857">ㅇㅇ대 수강신청 몇 시임?
+						
+						</a>
+						<span>2023.03.22</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11855">망했다
+						
+						</a>
+						<span>2023.03.21</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11854">강의교환 할 사람
+						
+						</a>
+						<span>2023.03.18</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11853">올클 기 받아가세요
+						
+						</a>
+						<span>2023.02.22</span>
+					</li>
+				
+					<li>
+						<a href="https://www.googoofun.com/web/community/communityView.do?nttInnb=11852">수강 신청 후기
+						
+						</a>
+						<span>2023.02.22</span>
+					</li>
+				
+				
+			</ul>
+			</dd>
+		</dl>
+	</div>
+	
+	
+</div><!-- // #container -->
+</form>
+
+</div>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+	//배너링크
+	$('.banner-link').funcBanner({});
+});
+</script>
+<div id="footer">
+	
+	    <div class="ft_notice">
+	        <div class="w1300"> 
+			<h2>공지사항</h2>
+	            <div class="bx-wrapper" style="max-width: 1120px; margin: 0px auto;">
+		<div class="bx-viewport" style="width: 100%; overflow: hidden; position: relative; height: 80px;">
+		<ul class="bxnotice" style="width: 1215%; position: relative; transition-duration: 0s; transform: translate3d(-1120px, 0px, 0px);">
+		<li style="float: left; list-style: none; position: relative; width: 560px;" class="bx-clone">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10433">수강신청 [NOTICE]
+		                    
+						</a>	                   
+	                    <span>2018.06.23 (토) 오후 1시</span>
+	                </li><li style="float: left; list-style: none; position: relative; width: 560px;" class="bx-clone">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10426">로그인 연동 문제 해결 방안
+		                    
+						</a>	                   
+	                    <span>2018.06.21 (목) 오후 1시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11796">일시적인 오류 안내창이 뜨는 경우
+		                    
+						</a>	                   
+	                    <span>2020.09.12 (토) 오후 7시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11787">수강신청 일정 변경 사항
+		                    
+						</a>	                   
+	                    <span>2020.09.07 (월) 오후 1시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11785">[정정기간] 수강신청 가능 강좌 확인하기
+		                    
+						</a>	                   
+	                    <span>2020.09.07 (월) 오전 11시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11784">[중요 공지] 수강신청 교환 GUIDE
+		                    
+						</a>	                   
+	                    <span>2020.09.07 (월) 오전 9시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11779">수강신청 방법 영상
+		                    
+						</a>	                   
+	                    <span>2020.09.04 (금) 오후 5시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11778">꿀팁 공유 받기 OR 하기
+		                    
+						</a>	                   
+	                    <span>2020.09.04 (금) 오전 11시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10889">강의 상호 교환 / 판매 방법 안내
+		                    
+						</a>	                   
+	                    <span>2018.10.30 (화) 오후 2시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10512">신청 시간 상세 분석 기준
+		                    
+						</a>	                   
+	                    <span>2018.07.03 (화) 오후 6시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10433">로그인 연동 문제 해결 방안
+		                    
+						</a>	                   
+	                    <span>2018.06.23 (토) 오후 1시</span>
+	                </li>
+	            
+	                <li style="float: left; list-style: none; position: relative; width: 560px;">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=10426">수강신청 일정 변경 사항
+		                    
+						</a>	                   
+	                    <span>2018.06.21 (목) 오후 1시</span>
+	                </li>
+	            
+	            <li style="float: left; list-style: none; position: relative; width: 560px;" class="bx-clone">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11796">[정정기간] 수강신청 가능 강좌 확인하기
+		                    
+						</a>	                   
+	                    <span>2020.09.12 (토) 오후 7시</span>
+	                </li><li style="float: left; list-style: none; position: relative; width: 560px;" class="bx-clone">
+	                    <a href="https://www.googoofun.com/web/cscenter/noticeView.do?nttInnb=11787">[중요 공지] 수강신청 교환 GUIDE
+		                    
+						</a>	                   
+	                    <span>2020.09.07 (월) 오후 1시</span>
+			</li></ul></div><div class="bx-controls bx-has-controls-direction"><div class="bx-controls-direction"></a></div></div></div>
+	        </div>
+	    </div>	
+	
+	
+    <div class="ft_info">
+        <div class="w1300">
+            <div class="fmenu">
+                <a href="https://www.googoofun.com/web/service/introduction.do">구구펀소개</a>
+                <a href="https://www.googoofun.com/web/service/agreement.do">이용약관</a>
+                <a href="https://www.googoofun.com/web/service/private.do">개인정보처리방침</a>
+                <a href="https://www.googoofun.com/web/cscenter/noticeList.do">고객센터</a>
+                <a href="https://www.googoofun.com/web/cscenter/guide.do">이용안내</a>
+                <a href="https://www.googoofun.com/web/service/promotion.do">광고/제휴안내</a>
+            </div>
+            <div class="fcompany">ⓒ 2023 SooWooMee co.,LTD.​​</div>
+            <!-- <div class="fcompany">
+                <p>
+                   <span>주식회사 구구펀</span>
+                    <span>서울시 관악구 난곡로 78, 4층</span>
+                    <span>대표이사 신은진</span>
+                </p>
+                <p>
+                    <span>사업자 번호 821-86-00532</span>
+                    <span>통신판매업신고 2018-서울관악-0085호</span>
+                    <span>고객센터 070-4140-8938</span>
+                </p>
+            </div>
+            <div class="fcopy">
+              	 ⓒ 2023 SooWooMee co.,ltd.
+            </div> -->
+            <a id="top_button" href="https://www.googoofun.com/web/main/main.do#;">TOP</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript" id="" src="./수우미_files/wcslog.js.다운로드"></script>
+<script type="text/javascript" id="">if(!wcs_add)var wcs_add={};wcs_add.wa="997f953fa37a50";wcs_do();</script><div id="torrent-scanner-popup" style="display: none;"><template shadowrootmode="open"><link rel="stylesheet" href="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/css/custom.css"><div id="yf-bt-wrapper" class="free"><div class="header"><img class="sts-logo" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/ts-free-logo.png"><div class="search-content"><input id="search-input" class="search-input" type="search" placeholder="Start your search here..."><span id="search-btn" class="search-btn"></span></div></div><div class="container"><div class="main-container"><div id="torrent-data" class="torrent-content"><div class="t-table"><div class="t-header"><div class="t-name">Torrent search results</div></div><div id="checked-sites" class="checked-sites-section"><div class="left">Checked Sites</div><div class="right"><span id="sites-count" class="sites-count">0</span></div></div><div id="table-body" class="t-body"><div id="loading" class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div class="table-message-container" id="table-message"><p>No items to list <br> Use the search bar above for instant results</p></div></div></div></div><div class="tooltip"><p class="tooltip-text">To see search results, type here and hit `Enter`</p></div><div class="footer"><span><span id="numberScanned" class="numberScanned">No results</span></span></div><div class="upgradeProPanel"><div class="upgradeProPanelTitle">Try our Pro Versions to unlock:</div><div class="upgradeProPanelList"><div><p>Faster Results</p></div><div><p>Secure Torrenting</p></div><div><p>Unlimited Search Results with detailed torrent info</p></div><div><p>1-YR Subscription to CyberGhost VPN <span style="font-size:8px;">(PRO+VPN only)</span></p></div></div><a class="upgrade-to-pro-button-2" id="buy-pro-vpn" href="https://www.utorrent.com/webpro-offer/?utm_source=Lavasoft&amp;utm_medium=version_1.0&amp;utm_campaign=Scanner" target="_blank">BUY PRO + VPN</a><a class="upgrade-to-pro-button-2" id="buy-pro" href="https://www.utorrent.com/webpro-offer/?utm_source=Lavasoft&amp;utm_medium=version_1.0&amp;utm_campaign=Scanner" target="_blank">BUY PRO</a></div></div><div class="sync-container nav-se-container"><div class="nav-se-content"><img class="sync-icon nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-sync.svg"><div class="nav-se-title">One more step to go before you start torrenting!</div><p class="nav-se-text">This extension can sync results with BitTorrent and/or uTorrent for instant downloading.</p><p class="nav-se-text">To activate this feature, please click on the button below, and then on the Chrome message to activate the 'Messaging Permission'.</p><button class="sync-permission-btn nav-se-btn">Activate Messaging Permission</button></div><div class="nav-se-content display-none"><img class="sync-icon nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-sync.svg"><div class="nav-se-title">Syncing...</div><p class="nav-se-text">Please allow Messaging Permissions in the proceeding Chrome message.</p></div><div class="nav-se-content display-none"><img class="sync-icon nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-success.svg"><div class="nav-se-title">Sync Complete</div><p class="nav-se-text">You have successfully activated the “Messaging Permission” feature. All your search results will sync with BitTorrent and/or uTorrent.</p></div></div><div class="license-container nav-se-container"><div class="nav-se-content"><img class="nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-key2.svg"><div class="nav-se-title">Enter License Key</div><p class="nav-se-text">Enter your license key and click on the activate button to start using <span>µTorrent Web Pro.</span></p><input type="text" id="license-input-key" class="license-input-key" placeholder="Enter Key"><div class="license-spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><button id="license-activate-button" class="license-activate-button nav-se-btn">Activate</button><p>Don't have a license key? <a class="license-buy-link" target="_blank">Click here</a></p></div><div class="nav-se-content display-none"><img class="nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-success.svg"><div class="nav-se-title">Happy Torrenting!</div><p class="nav-se-text">You are now an active PRO user</p><p class="nav-se-text">Your key is valid until <span class="expiry-date"></span></p></div><div class="nav-se-content display-none"><img class="nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-alert.svg"><div class="nav-se-title">Your license key has expired</div><p class="nav-se-text">Looks like your license key has expired, to renew your PRO license key, please select a license type:</p><a class="upgrade-to-pro-button-2 buy-license-expiry-button" href="https://www.utorrent.com/webpro-offer/?utm_source=Lavasoft&amp;utm_medium=version_1.0&amp;utm_campaign=Scanner" target="_blank">Buy Pro + VPN</a><a class="upgrade-to-pro-button-2 buy-license-expiry-button" href="https://www.utorrent.com/webpro-offer/?utm_source=Lavasoft&amp;utm_medium=version_1.0&amp;utm_campaign=Scanner" target="_blank">Buy Pro</a><p class="nav-se-text">Already have a license key? <a class="link" id="show-license-panel">Click here</a></p></div><div class="nav-se-content display-none"><img class="nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-success.svg"><div class="nav-se-title">Pro User</div><p class="nav-se-text">Your key is valid until <span class="expiry-date"></span></p><p class="nav-se-text">Your License Key:</p><p class="nav-se-text"></p><p class="nav-se-text margin-top-50">Switch back to Torrent Scanner Free?</p><button class="activate-free-btn nav-se-btn">Revert to Free Version</button></div></div><div class="feedback-container nav-se-container"><div class="nav-se-content"><img class="nav-se-icon" src="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/img/assets/icon-feedback.svg"><div class="nav-se-title">Feedback</div><p class="nav-se-text">Help us improve Torrent Scanner, send us comments, bugs, feedback, and suggestions.</p><button id="feedback-button" class="feedback-button nav-se-btn">Send Feedback</button></div></div><div class="settings-container nav-se-container"><div class="nav-se-content"><div class="settings-title">Settings</div></div><div class="s-table"><div class="s-row"><div class="s-title">FAQ<div class="s-arrow"><span class="arrow-down"></span></div></div><div class="s-content faq-content"><p class="faq-text">FAQ: <a href="chrome-extension://aegnopegbbhjeeiganiajffnalhlkkjb/faq.html" target="_blank">Click here</a></p></div></div><div class="s-row"><div class="s-title">Rate the extension<div class="s-arrow"><span class="arrow-down"></span></div></div><div class="s-content"><p class="rate-text">How did you like the extension experience?</p><div class="rating"><span class="rating-star">★</span><span class="rating-star">★</span><span class="rating-star">★</span><span class="rating-star">★</span><span class="rating-star">★</span></div><button class="rating-btn nav-se-btn" disabled="">Submit</button></div></div><div class="s-row"><div class="s-title">About<div class="s-arrow"><span class="arrow-down"></span></div></div><div class="s-content about-content"><div class="about-version">Version 1.3.0 <br><br> What's New</div><div class="about-new"><p></p><ul><li>Experience a complete new User Interface of the extension. It is enhanced and user friendly now.</li><li>Squashed some bugs.</li></ul><p></p></div></div></div><div class="s-row"><div class="s-title">Privacy Policy<div class="s-arrow"><span class="arrow-down"></span></div></div><div class="s-content"><div class="policy-text">Adaware Software (7270356 Canada Inc.) is the operator of the Adaware products suites and related services (the “<b>Company</b>”, ”<b>we</b>” or “<b>us</b>”). We respect your privacy rights and we are committed to protecting them. This privacy policy (“<b>Privacy Policy</b>” or simply “<b>policy</b>”) governs our products, services and websites that link to this Privacy Policy, and describes our practices of processing data from you. By “<b>you</b>”, we refer to either or all of the following: (i) visitors to our websites that links to this Privacy Policy (“<b>Visitor</b>” and “<b>Website</b>”, respectively); (ii) our customers using our software products and Services (“<b>User</b>”); and (c) a business customer, a business partner that has a contractual relationship with us or a prospective customer that is yet to be engaged in a contract with us (“Business Customer”). Unless explicitly mentioned otherwise, the information in this Privacy Policy refers to any and all data subject types (“you” or “your’). <br><br> For the purpose of this policy, the “<b>Service(s)</b>” shall include any software licensed by the Company, including features offered by or within the installed software or additional software scripts available therein (either downloaded from one of our websites, pre-installed on your device, downloaded through a third party website, obtained on a physical medium, or otherwise), or services provided through and/or on top such software, services offered on our websites, communication forums, support services, account operation, updates, enhancements, new features, premium support, extended guarantees, online version and free versions of a software or additional services or features as we ay make available from time to time. <br><br> If you are a California resident, please also see our <a href="https://www.adaware.com/CCPA/" target="_blank">CCPA Notice</a>. <br><br> <a href="https://www.adaware.com/privacy-policy/" target="_blank">Read more</a></div></div></div><div class="s-row" style="display: none;"><div class="s-title">Contact Us<div class="s-arrow"><span class="arrow-down"></span></div></div><div class="s-content"><div class="contact-text">For any payment and order-related support, please contact us at Email: <a href="mailto:support@torrentscanner.zendesk.com">support@torrentscanner.zendesk.com</a> or <a href="mailto:pcsoftwareinfo.com">pcsoftwareinfo.com</a><br><br>Phone: <a href="https://pcsoftwareinfo.com/contact.aspx" target="_blank">Click here</a></div></div></div></div></div></div><div class="nav"><button id="btnSync" class="nav-btn">Sync</button><button id="btnLicense" class="nav-btn">License</button><button id="btnHome" class="nav-btn">Home</button><button id="btnFeedback" class="nav-btn">Feedback</button><button id="btnSettings" class="nav-btn">Settings</button></div></div></template></div></body><iframe id="google_esf" name="google_esf" src="./수우미_files/zrt_lookup.html" style="display: none;"></iframe></html>

@@ -1,0 +1,311 @@
+/* submenu show/hide */
+$(function($){
+                
+    //cache nav
+    var nav = $(".lnb,.loc");
+    
+    //add indicator and hovers to submenu parents
+    nav.find("li").each(function() {
+        if ($(this).find("div").length > 0) {
+
+            //show subnav on hover
+            $(this).mouseenter(function() {
+                $(this).find("div").stop(true, true).slideDown(200);
+                $(this).addClass("on");
+            });
+            
+            //hide submenus on exit
+            $(this).mouseleave(function() {
+                $(this).find("div").stop(true, true).hide();
+                $(this).removeClass("on");
+            });
+        }
+    });
+});
+
+/* 상단배너 닫기 */
+$(function($){
+    if(localStorage.getItem("not_open_day") == "Y" && 
+            (new Date().getTime() < localStorage.getItem("not_open_day_expire")))
+    {
+        $("#top_banner").hide();
+    }
+    else
+    {
+        $("#top_banner").css("display","block");
+
+        //닫기
+        $("#top_banner .btnClose").bind("click", function(){
+            /* 오늘 하루 열지 않기 */
+            localStorage.setItem("not_open_day","Y");
+            localStorage.setItem("not_open_day_expire", new Date().getTime() + (24*60*60*1000));
+            
+            $("#top_banner").slideUp(500);
+        });                    
+    }           
+});
+
+/* 상단메뉴 스크롤시 고정 
+$(function(){
+    var jbOffset = $( '#header' ).offset();
+    $( window ).scroll( function() { 
+      if ( $( document ).scrollTop() > jbOffset.top ) { 
+        $( '#header' ).addClass( 'headFixed' ); 
+      }
+      else {
+        $( '#header' ).removeClass( 'headFixed' ); 
+      }
+    });
+});
+*/
+
+/* 메인 3단 슬라이더 */
+$(document).ready(function(){
+    var elem = $("#mainSlideBnr"); 
+    var controls = $("#mainSlideBnr").find(".bx-controls");
+    elem.append(controls);
+
+    $(".btn_arrow .aa").css('opacity','0.7');
+    $(".btn_arrow .bb").css('opacity','0.7');  
+});
+
+/* 텝메뉴 */
+$(function(){
+    $(".rview").css("display","none");
+    $(".rv1").css("display","block");
+    $('ul.rtab a').click(function(){
+    	if(!$(this).parents('ul').hasClass('notevent')){
+    		var indexNo = $(".rtab").find("a").index(this);
+    		$('.rtab li').removeClass("on");
+    		$(this).parent().addClass("on");
+    		$(".rview").css("display","none");
+    		$(".rview").eq(indexNo).css("display","block");
+    	}
+    });
+});
+
+/* 상단으로 TOP */
+$(function(){
+    $('#top_button').click(function(){
+        $("html,body").animate({scrollTop:'0'},500);
+    });
+});
+
+/* 티켓오픈정보 Slider */ /* 2018-06-04 수정 */
+$(function(){
+    var topen = $('.gtype1').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 260,
+        slideMargin: 0,
+        minSlides: 5,
+        maxSlides: 5,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});
+
+/* 연예 매거진 Slider */
+$(function(){
+    var mz_type = $('.magazine_type').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 433,
+        slideMargin: 0,
+        minSlides: 3,
+        maxSlides: 3,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});
+
+/* 영상 게시판 Slider */
+$(function(){
+    var mv_type = $('.gtype2').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 325,
+        slideMargin: 0,
+        minSlides: 4,
+        maxSlides: 4,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});
+
+/* 하단 공지사항 Slider */
+$(function(){
+    var ft_notice = $('.bxnotice').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 560,
+        slideMargin: 0,
+        minSlides: 2,
+        maxSlides: 2,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});
+
+/* 하단 배너 Slider */
+$(function(){
+    var ft_banner = $('.bxbanner').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 135,
+        slideMargin: 75,
+        minSlides: 8,
+        maxSlides: 8,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+}); 
+
+/* 토글 Class */
+$(function(){
+	$(".rock,.good").click(function(){
+        $(this).toggleClass("on");
+    });
+});
+
+/* FAQ slideToggle */
+$(function(){
+    $(".fold_list>li>a").click(function() {
+        $(this).next("div").slideToggle().parent("li").siblings().children("div").slideUp();
+        return false;
+    });
+});
+
+/* 체크박스 */
+$(function(){
+    if ($(':checkbox').length > 0) {
+        $(':checkbox').click(function (e) {
+            var $target = $(e.target);
+            var $label = $target.closest('span').find('label');
+            if ($target.prop('checked')) {
+                $target.attr("checked", true);
+                $label.addClass('on');
+            } else {
+                $target.attr("checked", false);
+                $label.removeClass('on');
+            }
+        });
+    }
+});
+
+/* 라디오 */
+$(document).on('click', 'input[type=radio]', function(e){
+    $(this).parent().parent().find("input[name='" + $(this).prop("name") + "']").each(function() {
+        if ($(this).prop("checked")) {
+            $(this).attr("checked", true);
+            $("label[for=" + $(this).attr("id") + "]").addClass("on");
+        } else {
+            $(this).attr("checked", false);
+            $("label[for=" + $(this).attr("id") + "]").removeClass("on");
+        }
+    });
+});
+
+/* 체크박스 전체선택 */
+$(function(){
+    var $checkHead = $(".check_all input[type='checkbox']"); // head에서 체크박스인 input을 찾는다.
+    var $checkBody = $(".check_ind input[type='checkbox']"); // body에서 체크박스인 input을 찾는다.
+
+    /* 전체선택 */
+    $checkHead.click(function(){
+        var $bodyPutCk = $checkHead.is(":checked");
+        if ( $bodyPutCk == true ) {
+            //$lastActive.addClass("active");
+            $checkBody.attr("checked", true);
+            $checkBody.prop("checked", true);
+            $(".check_ind").find('label').addClass('on');
+        }else {
+            //$lastActive.removeClass("active");
+            $checkBody.attr("checked", false);
+            $checkBody.prop("checked", false);
+            $(".check_ind").find('label').removeClass('on');
+        }
+    });
+
+    /* 하위 전체 선택시 전체버튼 선택 */
+    $checkBody.click(function(){
+        var tdInput_Length = $checkBody.length; // body 에 있는 input 갯수
+        var tdInput_Check_Length = $(".check_ind input[type='checkbox']:checked").length; // body 에 있는 선택된 input 갯수
+        if ( tdInput_Length == tdInput_Check_Length ) {
+            //$checkHead.addClass("active");
+            $checkHead.attr("checked", true);
+            $checkHead.prop("checked", true);
+            $(".check_all").find('label').addClass('on');
+        }else {
+            //$checkHead.removeClass("active");
+            $checkHead.attr("checked", false);
+            $checkHead.prop("checked", false);
+            $(".check_all").find('label').removeClass('on');
+        }
+    });
+});
+
+/* 레이어 팝업 배경 마스크효과 */
+function Mask() {
+    //애니메이션 효과
+    //$('#mask').fadeIn(1000);      
+    $('#mask').fadeTo("slow", 0.5);
+}
+ 
+/* 레이어 팝업 기본 */
+function popupOpen() {
+    $('#layerbox').css("position", "fixed");
+    //영역 가운에데 레이어를 뛰우기 위해 위치 계산 
+    $('#layerbox').css("top",(($(window).height() - $('#layerbox').outerHeight()) / 2) + $(window).scrollTop());
+    $('#layerbox').css("left",(($(window).width() - $('#layerbox').outerWidth()) / 2) + $(window).scrollLeft());
+    $('#layerbox').draggable();
+    $('#layerbox').show();
+}
+
+/* 레이어 팝업 닫기 */
+function popupClose() {
+    $('#layerbox').hide();
+    $('#mask').hide();
+}
+
+/* 티켓예매 > 추천 FUN 공연 */
+$(function(){
+    var topen = $('.bproduct').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 290,
+        slideMargin: 20,
+        minSlides: 4,
+        maxSlides: 4,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});
+
+/* 티켓오픈 > HOT 공연 오픈 소식 */
+$(function(){
+    var topen = $('.open_type').bxSlider({
+        mode:'horizontal',
+        pager:false,
+        slideWidth: 250,
+        slideMargin: 0,
+        minSlides: 5,
+        maxSlides: 5,
+        moveSlides: 1,
+        pause: 4000,
+        auto:false,
+        controls: true
+    });
+});

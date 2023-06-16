@@ -1,0 +1,1819 @@
+/**************************************************************************
+ * Copyright (c) googoofun 
+ * FileName : googoofun.js
+ * Author : adminha
+ * Date : 2017.12.20
+ * Configuration options:
+ **************************************************************************/
+//document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js'></script>");
+document.write("<script src='/js/jquery/moment.js'></script>");
+
+	'use strict';
+
+(function($){ 
+
+	/* --------------------------------------------------------------------------------------------------------
+	 * @functionName : $.callAjax
+	 * @functionDesc : 공통 ajax 호출
+	 * @param [url] : 호출 url
+	 * @returns : promise
+	 * @Example : $.callAjax({url:'/json/SCR-01-013.json'
+										,data:{daterange : '20170101')
+												  ,groupby:'voc@TERMS:3/ASC'}
+							}).done(function (result){
+								//통신 성공후 처리
+							}).fail(function(err){
+								console.log("error:" + err);
+								//실패시 처리
+							});
+	--------------------------------------------------------------------------------------------------------- */
+	
+	//ajax 호출
+	$.callAjax = function(args){
+		var def = $.Deferred();
+		  
+		  $.ajax({
+			    type: args.type || 'GET',
+			    url: args.url,
+		        dataType:'json',
+				cache : false,
+			    data: args.data || null,
+			    success: function(result, textStatus, xhr) {
+		    		if(xhr.status === 200){
+		    			def.resolve(result);
+		    		}else{
+		    			def.reject("HTTP error: " + xhr.status);
+		    		}
+			    },
+			    error: function() {
+			    	
+			    },
+				beforeSend: function() {
+			 		//통신을 시작할때 처리
+					$('.lodingwrap').show();
+				},
+				complete: function() {
+					//통신이 완료된 후 처리
+					$('.lodingwrap').hide();
+				}
+		  });
+		  
+		  return def.promise();
+	};
+	
+	$.callAjaxMulti = function(args){
+		var def = $.Deferred();
+		  
+		  $.ajax({
+			    type: args.type || 'GET',
+			    url: args.url,
+		        processData : false,
+				contentType : false,
+				cache : false,
+			    data: args.data || null,
+			    success: function(result, textStatus, xhr) {
+			    	//console.log('get',result);
+		    		if(xhr.status === 200){
+		    			def.resolve(result);
+		    			if(args.callback != ""){
+		    				args.callback;
+		    			}
+		    		}else{
+		    			def.reject("HTTP error: " + xhr.status);
+		    		}
+			    },
+			    error: function() {}
+		  });
+		  
+		  return def.promise();
+	};
+	
+	//pagination
+	$.funcPagination = function(options){
+		var opts = options || {pagination:'.paging li', pageIndex : '#pageIndex', form : 'form'};
+		var pagination = opts.pagination;
+		var pageIndex = opts.pageIndex;
+		var form = opts.form;
+		
+		$(pagination).on('click', function(){
+			$(pageIndex).val($(this).data('value'));
+			$(form).submit();
+		});
+	}
+	
+	var _gl_loginId = '';
+	var _gl_imgServer = '';
+	var _gl_certifiedYn = '';
+	
+	var _gl_session = {
+		  loginId : ''
+		, imgServe : ''
+		, certifiedYn : ''
+	};
+	
+	//session
+	$.fn.session = { 
+		init : function(s){
+			_gl_session.loginId = s.loginId || '';
+			_gl_session.imgServer = s.imgServer || '';
+			_gl_session.certifiedYn = s.certifiedYn || '';
+		},
+		checkStatusLogin : function(msg){
+			if(_gl_session.loginId.trim().length > 0){
+				return true;
+			}else{
+				if(msg){
+					if(confirm('로그인 후 이용가능 합니다.\n로그인 페이지로 이동하시겠습니까?')){
+						location.href = '/web/login/login.do';
+						return false;
+					}
+					return false;
+				}
+				return false;
+			}
+		},
+		getLoginId : function(ty){
+			if(ty == 'fr' && _gl_session.loginId != ''){
+				return _gl_session.loginId.split('@')[0];
+			}else{
+				return _gl_session.loginId;
+			}
+		}
+	};
+	
+	//배너링크
+	$.fn.funcBanner = function(opts){
+		return this.each(function(i){
+			var $el = $(this);
+			$el.on('click', function(){
+				var targetUrl = $(this).data('targetUrl');
+				var popYn = $(this).data('popYn');
+				if($.stringFunc.isExistVal(targetUrl)){
+					if(popYn == 'Y'){
+						var openNewWindow = window.open("about:blank");
+						openNewWindow.location.href = targetUrl;
+					}else{
+						location.href = targetUrl;
+					}
+				}
+			});
+		});
+	};
+	
+	//팝업
+	$.fn.funcPopup = {
+		open : function(){
+			$.callAjax({url:'/web/popup/popupList.do'
+							,data:{}
+							,type:'POST'
+			}).done(function (data){
+				var list = data.result.list;
+				if(list != undefined && list != ''){
+					for(var i in list){
+						var popId = 'googoofun_pop_'+list[i].popupInnb;
+						if($.cookie(popId) != 'true'){
+							var x = list[i].locLeft; 
+							var y = list[i].locTop;
+							//팝업 위치설정
+							if(!$.stringFunc.isExistVal(x)){
+								x = (window.screen.width / 2) - (list[i].width / 2);
+							}
+							if(!$.stringFunc.isExistVal(y)){
+								y = (window.screen.height / 2) - (list[i].height / 2);
+							}
+							var location = "width="+list[i].width+", height="+list[i].height+", left="+x+", top="+y+", scrollbars=no";
+							window.open("/web/popup/popup.do?popupInnb="+list[i].popupInnb, 'pop_'+list[i].popupInnb
+									, location);
+						}
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		},
+		close : function(pId, checked){
+			var popId = 'googoofun_pop_'+pId;
+			if(checked){
+				$.cookie(popId, true, {expires : 1, path : '/'});
+			}
+			window.close();
+		}
+	};
+	
+	//지도 호출
+	$.funcCallMap = function(){
+		var mapsInfo = {};
+		var _this = this;
+		this.init = function(opts){
+			mapsInfo = $.extend({}, opts || {});
+			if(mapsInfo.type != undefined && mapsInfo.type != ''){
+				_this.drawMap();
+			}
+		};
+		this.drawMap = function(){
+			if(mapsInfo.type == 'nhn'){//네이버
+				var nhnMap = null;
+				if(nhnMap == null){
+					nhnMap = new naver.maps.Map(mapsInfo.target, {zoom:14});
+					var myaddress = mapsInfo.addr;
+					naver.maps.Service.geocode({address: myaddress}, function(status, response) {
+						if(status !== naver.maps.Service.Status.OK) {
+							return alert(myaddress + '의 검색 결과가 없거나 기타 네트워크 에러');
+						}
+						var result = response.result;
+						var myaddr = new naver.maps.Point(result.items[0].point.x, result.items[0].point.y);
+						nhnMap.setCenter(myaddr); // 검색된 좌표로 지도 이동
+						// 마커 표시
+						var marker = new naver.maps.Marker({
+							position: myaddr,
+							map: nhnMap
+						});
+						// 마커 클릭 이벤트 처리
+						/*naver.maps.Event.addListener(marker, "click", function(e){
+							if(infowindow.getMap()){
+								infowindow.close();
+							}else{
+								infowindow.open(nhnMap, marker);
+							}
+						});*/
+						// 마크 클릭시 인포윈도우 오픈
+						var infowindow = new naver.maps.InfoWindow({
+							//content: '<h4> [네이버 개발자센터]</h4><a href="https://developers.naver.com" target="_blank"><img src="https://developers.naver.com/inc/devcenter/images/nd_img.png"></a>'
+							content: '<button type="button" style="display:inline-block; width:270px; height:60px; line-height:60px; font-size:18px; color:#fff; background:#f54a7e;">['+mapsInfo.title+']</button>'
+						});
+						//infowindow.open(nhnMap, marker);
+					});
+				}
+			}
+		};
+	};
+	
+	//배송지관리
+	$.funcAdres = function(){
+		var _this = this;
+		var adresInfo = {};
+		this.init = function(opts){
+			adresInfo = $.extend({}, opts || {});
+			_this.bindEvent();
+		};
+		
+		this.bindEvent = function(){
+			$('#closeAdres').unbind('click');
+			$('#closeAdres').on('click', function(){
+				popupClose();
+			});
+			
+			$('#modifyAdres').unbind('click');
+			$('#modifyAdres').on('click', function(){
+				var adresInnb = $('#adresInnb').val();
+				adresInfo["type"] = (adresInnb == '') ? 'insert':'update';
+				adresInfo["adresInnb"] = adresInnb;
+				adresInfo["recptr"] = $('#recptr').val();
+				adresInfo["mbtlnum"] = $('#mbtlnum1').val()+'-'+$('#mbtlnum2').val()+'-'+$('#mbtlnum3').val();
+				adresInfo["zip"] = $('#zip').val();
+				adresInfo["postAdres"] = $('#postAdres').val();
+				adresInfo["detailAdres"] = $('#detailAdres').val();
+				_this.ajaxCall(adresInfo);
+			});
+			
+			$('#shipping').unbind('click');
+			$('#shipping').on('click', function(){
+				adresInfo["type"] = 'get';
+				_this.ajaxCall(adresInfo);
+				Mask();
+				$("#layerbox").toggle();
+			});
+		};
+		
+		this.ajaxCall = function(params){
+			$.callAjax({url:'/web/mypage/modifyAdres.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					if(params.type == 'get'){
+						var adres = data.result.adres;
+						if(adres != null){
+							$('#adresInnb').val(adres.adresInnb);
+							$('#recptr').val(adres.recptr);
+							$('#mbtlnum').val(adres.mbtlnum);
+							$('#mbtlnum1').val(adres.mbtlnum.split('-')[0]);
+							$('#mbtlnum2').val(adres.mbtlnum.split('-')[1]);
+							$('#mbtlnum3').val(adres.mbtlnum.split('-')[2]);
+							$('#zip').val(adres.zip);
+							$('#postAdres').val(adres.postAdres);
+							$('#detailAdres').val(adres.detailAdres);
+						}
+					}else{
+						alert('배송지 정보가 수정 되었습니다.');
+						Mask();
+						$("#layerbox").toggle();
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+	};
+	
+	//SNS 퍼가기
+	$.funcSnsShare = function(){
+		var _this = this;
+		var snsInfo = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			snsInfo = {
+				 domain	: settings.domain || 'http://www.googoofun.com/'
+				, snsClass : settings.snsClass || '.vsns a'
+			};
+		    
+			_this.bindEvent();
+		};
+		
+		this.bindEvent = function(){
+			$(snsInfo.snsClass).unbind('click');
+			$(snsInfo.snsClass).on('click', function(){
+				_this.clickSnsShare($(this));
+			});
+		};
+		
+		this.clickSnsShare = function(o){
+			var sns = $(o).data('type');
+			var contentsUrl = _this.encodeURI(location.href);
+			contentsUrl = contentsUrl.replace("localhost","www.googoofun.com");
+			
+			var title = $('.nttTitle').text();
+			title =  _this.encodeURI(title);
+			var snsUrl = '';
+			
+			switch(sns){
+				case "facebook" : 
+					snsUrl = 'https://www.facebook.com/sharer/sharer.php';
+					snsUrl += '?u=' +contentsUrl;
+					break;
+				
+				case "twitter" : 
+					snsUrl = 'https://twitter.com/intent/tweet';
+					snsUrl += '?url='+contentsUrl;
+					snsUrl += '&text='+title;
+					break;
+				
+				case "naver" : 
+					snsUrl = 'https://share.naver.com/web/shareView.nhn';
+					snsUrl += '?url='+contentsUrl;
+					snsUrl += '&title='+title;
+					break;
+			};
+			
+			window.open(snsUrl, "send_"+sns, "width=580, height=555, resizable=no, scrollbars=no, status=no");
+		};
+		
+		this.encodeURI = function(url){
+			return encodeURIComponent(url).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+		};
+	};
+	
+	//게시물 신고
+	$.funcReport = function(){
+		var _this = this;
+		var reportInfo = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			reportInfo = {
+				nttInnb		: settings.nttInnb || ''
+			};
+			
+			_this.bindEvent();
+		};
+		
+		this.bindEvent = function(){
+			$('.report').unbind('click');
+			$('.report').on('click', function(){
+				_this.clickReport($(this));
+			});
+		};
+		
+		this.clickReport = function(o){
+			if(!$.fn.session.checkStatusLogin(true)){
+				return;
+			}
+			reportInfo.nttInnb = $(o).data('value');
+			if(confirm('해당 게시물을 신고 하시겠습니까?')){
+				_this.ajaxCall();
+			}
+		};
+		
+		this.ajaxCall = function(){
+			$.callAjax({url:'/web/board/reportProc.do'
+							,data:reportInfo
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					alert('해당 게시물의 신고처리가 완료 되었습니다.');
+					return;
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+	};
+	
+	//좋아요
+	$.funcLikes = function(){
+		
+		var _this = this;
+		var likesInfo = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			likesInfo = {
+				nttInnb		: settings.nttInnb || '',
+				mode		: ''
+			};
+			
+			_this.bindEvent();
+		};
+		
+		this.bindEvent = function(){
+			$('.good').unbind('click');
+			$('.good').on('click', function(){
+				_this.clickLike($(this));
+			});
+		};
+		
+		this.clickLike = function(o){
+			var param = likesInfo;
+			param["mode"] = $(o).data('mode');
+			if(!$.fn.session.checkStatusLogin(true)){
+				return;
+			}
+			_this.ajaxCall(param);
+		};
+		
+		this.ajaxCall = function(params){
+			$.callAjax({url:'/web/board/likeProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					$('.good a span').text(data.result.likeCo);//카운트 update
+					$('.good').toggleClass('on')
+					.data('mode',(params.mode == 'Y' ? 'N':'Y'));
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+	};
+	
+	//영상클릭 수
+	$.funcMovPlay = function(nttInnb){
+		$.callAjax({url:'/web/board/playProc.do'
+						,data:{nttInnb:nttInnb}
+						,type:'POST'
+		}).done(function (data){
+			if(data.result.code == 'error'){
+				alert(data.result.message);
+				return;
+			}
+		}).fail(function(err){
+			alert("error:" + err);
+			return;
+		});
+	};
+	
+	//공통 게시판 호출
+	$.funcBoard = function(){
+		
+		var _this = this;
+		var bbsInfo = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			
+			bbsInfo = {
+				bbsInnb						: settings.bbsInnb || '',
+				nttInnb						: settings.nttInnb || '',
+				pageIndex					: settings.pageIndex || 1,
+				recordCountPerPage	: settings.recordCountPerPage || 10,
+				srchwrd						: settings.srchwrd || '',
+				srchcnd						: settings.srchcnd || '',
+				gridArea					: settings.gridArea || '',
+				formId						: settings.formId || 'form',
+				viewUrl						: settings.viewUrl || '',
+				sortType					: settings.sortType || '',
+				init							: settings.init || true
+			};
+			
+			_this.bindEvent();
+			return _this.setSearchParam(bbsInfo);
+		};
+		
+		this.bindEvent = function(){
+			
+			$('.more-link, .btn-view, .btn-search').unbind('click');
+			//더보기 클릭 이벤트
+			$('.more-link').bind('click', function(){
+				bbsInfo.init = false;	//초기화 해제
+				bbsInfo.pageIndex++;
+				$('#pageIndex').val(bbsInfo.pageIndex);
+				
+				_this.getList(bbsInfo);
+			});
+			
+			//링크 클릭 이벤트
+			$('.btn-view').bind('click', function(){
+				_this.moveToView($(this));
+			});
+			
+			//검색 클릭 이벤트
+			$('.btn-search').bind('click', function(){
+				_this.setSearchParam();
+			});
+			//검색어 입력 후 엔터처리 이벤트
+			$('#srchwrd').unbind('keypress');
+			$('#srchwrd').bind('keypress', function(e){
+				if(e.keyCode == 13){
+					_this.setSearchParam();
+				}
+			});
+			//정렬순서 이벤트
+			if(bbsInfo.sortType != ''){
+				$('.sort li a').unbind('click');
+				$('.sort li a').bind('click', function(i){
+					var li = $(this).parent();
+					$(li).siblings().removeClass("on");
+					$(li).addClass('on');
+					bbsInfo.sortType = $(li).data('sort');
+					_this.setSearchParam();
+				});
+			}
+		};
+		
+		this.ajaxCall = function(params){
+			$.callAjax({url:'/web/board/boardList.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.makeRows(data.result);
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.setSearchParam = function(){
+			bbsInfo.pageIndex = 1;
+			bbsInfo.init = true;
+			bbsInfo.srchwrd = ($('#srchwrd').length) ? $('#srchwrd').val() : '';
+			bbsInfo.srchcnd = ($('#srchcnd').length) ? $('#srchcnd').val() : '';
+			_this.getList(bbsInfo);
+		};
+		
+		this.moveToView = function(o){
+			$('#nttInnb').val($(o).data('value'));
+			$(bbsInfo.formId).prop('action', bbsInfo.viewUrl)
+			.submit();
+		}
+		this.getList = function(params){
+			_this.ajaxCall(params);
+		};
+		
+		this.makeRows = function(data){
+			var str = '';
+			var list = data.boardList;
+			if(list != undefined && list != ''){
+				for(var i in list){
+					var o = list[i];
+					var img = '/img/default_image.jpg';
+					if(bbsInfo.bbsInnb == 'BN00002'){
+						img = '/img/default/event_default_image.jpg';
+					}else if(bbsInfo.bbsInnb == 'BN00003'){
+						img = '/img/default/open_default_image.jpg';
+					}else if(bbsInfo.bbsInnb == 'BN00004'){
+						img = '/img/default/magazine_default_image.jpg';
+					}					
+					
+					str +='<li>';
+						if(o.thumbPath != null && o.thumbPath != ''){
+							img = _gl_session.imgServer + o.thumbPath;
+						}
+						
+						if(bbsInfo.bbsInnb == 'BN00002'){
+							str +='<div class="thumb">';
+							str +='<a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">';
+							str +='<img src="'+img+'" alt="">';
+							str +='</div>';
+							str +='<div class="info">';
+							str +='<p class="subject">';
+							str +='<a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">'+o.nttTitle+'</a>';
+							str +='</p>';
+							str +='<p class="day">';
+							str += ($.stringFunc.isExistVal(o.eventBgnde) ? o.eventBgnde : '')
+							str += ($.stringFunc.isExistVal(o.eventEndde) ? ' ~ ': '') 
+							str += ($.stringFunc.isExistVal(o.eventEndde) ? o.eventEndde : '');
+							str +='</p>';
+							str +='<p class="cont">'+o.nttCn+'</p>';
+							str +='</div>';
+						}
+						//연예콘텐츠 > 티켓오픈
+						if(bbsInfo.bbsInnb == 'BN00003'){
+							str +='<div class="c_day">티켓오픈일<p>'+o.ticketOpende+'</p></div>';
+							str +='<div class="c_info">';
+							if(o.exSale == 'Y' || o.preSale == 'Y' || o.recomd == 'Y'){
+								str +='<p>';
+								if(o.exSale == 'Y'){
+									str +='<span class="ex_sale">단독판매</span>';
+								}
+								if(o.preSale == 'Y'){
+									str +='<span class="pre_sale">선예매</span>';
+								}
+								if(o.recomd == 'Y'){
+									str +='<span class="recomd">추천</span>';
+								}
+								str +='</p>';
+							}
+							str +='<p class="subject"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">'+o.nttTitle+'</a></p>';
+							str +='<p class="date">';
+							str +='<span>'+moment(o.credt).format("YYYY.MM.DD (ddd) HH:mm")+'</span>';
+							str +='<span>조회 : '+o.inqireCo+'</span>';
+							str +='</p>';
+							str +='</div>';
+							str +='<div class="c_thumb"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">';
+							str +='<img src="'+img+'" alt=""></a></div>';
+						}
+						//연예콘텐츠 > 매거진
+						if(bbsInfo.bbsInnb == 'BN00004'){
+							str +='<div class="thumb"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">';
+							str +='<img src="'+img+'" alt=""></a></div>';
+							str +='<div class="info">';
+							str +='<p class="subject"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">'+o.nttTitle+'</a></p>';
+							str +='<p class="summary">'+o.nttCn+'</p>';
+							str +='</div>';
+						}
+						//연예콘텐츠 > 미디어
+						if(bbsInfo.bbsInnb == 'BN00005'){
+							var movImg = '';
+							if(o.movKey != null && o.movKey != ''){
+								movImg = 'https://img.youtube.com/vi/'+o.movKey+'/0.jpg';
+							}else{
+								movImg = img;
+							}
+							str +='<div class="thumb"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">';
+							str +='<img src="'+movImg+'" alt=""></a></div>';
+							str +='<div class="info">';
+							str +='<p class="subject"><a href="javascript:;" class="btn-view" data-value="'+o.nttInnb+'">';
+							str += o.nttTitle;
+							str +='</a></p>';
+							str +='<p class="writer">';
+							str +='<span>'+moment(o.credt).format("YYYY.MM.DD HH:mm")+'</span>';
+							str +='<span>'+o.crtr+'</span>';
+							str +='</p>';
+							str +='<p class="play">';
+							str +='<span>▶ '+$.stringFunc.comma(o.playCo)+'</span>';
+							str +='<span>♥ '+$.stringFunc.comma(o.likeCo)+'</span>';
+							str +='</p>';
+							str +='</div>';
+						}
+					str +='</li>';
+				}
+			}else{
+				str = '<div class="no-data">조회된 데이터가 없습니다.</div>';
+			}
+			//초기화 로딩 or 더보기
+			if(bbsInfo.init){
+				$(bbsInfo.gridArea).html(str);
+			}else{
+				$(bbsInfo.gridArea).append(str);
+			}
+			//전체데이터 수 출력
+			var totalCnt = data.totalCnt;
+			$('#totalCnt').text(totalCnt);
+			//더보기 버튼
+			var nextCnt = totalCnt - bbsInfo.pageIndex * bbsInfo.recordCountPerPage;
+			$('.more-link').css('display', (nextCnt > 0) ? '':'none');
+			_this.bindEvent();
+		};
+	};
+	
+	//댓글
+	$.funcReply = function(){
+		
+		var _this = this;
+		var _user = $.fn.session.getLoginId('fr');
+		var replyInfo = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			
+			replyInfo = {
+				replyKnd					: settings.replyKnd || '',
+				rootInnb					: settings.rootInnb || '',
+				replyInnb					: settings.replyInnb || '',
+				pageIndex					: settings.pageIndex || 1,
+				recordCountPerPage	: settings.recordCountPerPage || 10,
+				init							: settings.init || true
+			};
+			
+			_this.bindEvent();
+			return _this.getList(replyInfo);
+		};
+		
+		this.bindEvent = function(){
+			
+			$('.rock, .btn-insert, .btn-remove, .btn-active').unbind('click');
+			
+			//비밀글 클릭 이벤트
+			$('.rock').bind('click', function(){
+				$(this).toggleClass('on');
+			});
+			
+			//등록/수정 이벤트
+			$('.btn-insert').bind('click', function(){
+				_this.insertUpdate($(this));
+			});
+			
+			//삭제 이벤트
+			$('.btn-remove').bind('click', function(){
+				_this.remove($(this));
+			});
+			
+			//댓글달기 영역활성화
+			$('.btn-active').bind('click', function(){
+				$(this).toggleClass('on');
+				_this.ativeWrite($(this));
+			});
+		};
+		
+		this.ajaxCall = function(params){
+			$.callAjax({url:'/web/reply/replyProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					if(params.type == 'list'){
+						_this.makeRows(data.result);
+						replyInfo.pageIndex++;
+					}else{
+						replyInfo.pageIndex = '1';
+						_this.getList(replyInfo);
+						$('#replayCn').val('');//댓글 영역초기화
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.insertUpdate = function(obj){
+			var root = obj.parents('.r_write');
+			var mode = obj.data('mode');
+			var params = replyInfo;
+			var replyInnb = obj.data('reply');
+			replyInnb = (replyInnb == undefined || replyInnb =='') ? '0':replyInnb;
+			
+			if(replyInnb != '0'){//댓글의 경우
+				var prt = obj.closest('li').find('.tog_ls_write');
+				params["depth"] = Number(prt.data('depth'))+1;
+				params["grpNo"] = prt.data('grpno');
+			}
+			if(_this.vaildation(root)){
+				params["type"] = mode;
+				params["replyInnb"] = replyInnb;
+				params["replyCn"] = root.find('textarea').val();
+				params["secretYn"] = root.find('.rock').hasClass('on') ? 'Y': 'N';
+				
+				if(!confirm('댓글을 '+(mode == 'update' ? '수정':'등록')+' 하시겠습니까?')){
+					return;
+				}
+				_this.ajaxCall(params);
+			}
+		};
+		
+		this.remove = function(obj){
+			var params = replyInfo;
+			params["type"] = 'remove';
+			params["replyInnb"] = obj.data('reply');
+			
+			if(!confirm('댓글을 삭제 하시겠습니까?')){
+				return;
+			}
+			
+			_this.ajaxCall(params);
+		};
+		
+		this.vaildation = function(r){
+			if($.fn.session.checkStatusLogin(true)){ //로그인 체크
+				var target = r.find('textarea');
+				if(!$.stringFunc.isExistVal(target.val())){//댓글 체크
+					alert('댓글을 입력해주세요.');
+					$(target).focus();
+					return false;
+				}else{
+					return true;
+				}
+			}else{
+				return false;
+			}
+		};
+		
+		this.getList = function(params){
+			params["type"] = 'list';
+			_this.ajaxCall(params);
+		};
+		
+		this.makeRows = function(data){
+			var str = '';
+			var totalCnt = data.totalCnt;
+			$('#totalCnt').text(totalCnt);
+			
+			var list = data.replyList;
+			if(list != undefined && list != ''){
+				for(var i in list){
+					str +='<li>';
+					var crtr =list[i].crtr;
+					crtr = (crtr != '') ? crtr.split('@')[0]:'';
+						//str +='<div class="cm_v '+((list[i].depth != 1) ? 'ind':'')+'" style="margin-left:'+(list[i].depth > 2 ? 20*list[i].depth:0)+'px">';
+						str +='<div class="cm_v '+((list[i].depth != 1) ? 'ind':'')+'">';
+							str +='<span class="pic"><img src="/img/pic_m.png" width="60" height="60" alt=""></span>';
+							str +='<span class="id">'+crtr+'</span>';
+							str +='<div class="comment">';
+							str += list[i].replyCn;
+							str +='</div>';
+							str +='<span class="rp_btn">';
+							if(list[i].depth == 1){ //node level이 1일 경우에만 댓글 버튼 활성화
+							//if(list[i].depth <= 5){ //node level 5까지 허용
+								str +='<a href="javascript:;" class="tog_ls_write btn-active" data-mode="insert" data-reply="'+list[i].replyInnb+'" data-depth="'+list[i].depth+'" data-grpno="'+list[i].grpNo+'">댓글</a>';
+							}
+							//본인글일 경우에만 수정/삭제 활성화
+							if(crtr == _user){
+								str +='<a href="javascript:;" class="btn-active" data-mode="update" data-reply="'+list[i].replyInnb+'" data-secret="'+list[i].secretYn+'">수정</a>';
+								str +='<a href="javascript:;" class="btn-remove" data-reply="'+list[i].replyInnb+'">삭제</a>';
+							}
+							str +='</span>';
+						str +='</div>';
+					str +='</li>';
+				}
+			}else{
+				str = '<li><div class="cm_v"><span class="" style="display:list-item;text-align:center">등록된 댓글이 없습니다.</span></div></li>';
+			}
+			$('.ls_bd').children().remove().end().append(str);
+			
+			_this.bindEvent();
+			
+			this.pagination(data.paginationInfo);
+		};
+		
+		this.ativeWrite =function(obj){
+			var node = obj.parents('li');
+			var mode = obj.data('mode');
+			
+			if(node.find('.cm_w').length == 0){
+				var str = '';
+				str+='<div class="cm_w" style="display:none;">';
+				str+='<div class="r_write">';
+				str+='<div class="in_tp">';
+				str+='<span class="pic"><img src="/img/pic_s.png" width="30" height="30" alt=""></span>';
+				str+='<span class="id"><input type="text" value="'+_user+'" placeholder="아이디" readonly="readonly"></span>';
+				str+='<textarea placeholder="댓글을 입력해주세요."></textarea>';
+				str+='</div>';
+				str+='<div class="in_sb clear">';
+				str+='<span class="rock">비밀글</span>';
+				str+='<button type="button" class="btn-insert" data-mode="insert" data-reply="'+obj.data('reply')+'">등록</button>';
+				str+='</div>';
+				str+='</div>';
+				str+='</div>';
+				node.append(str);
+			}
+			
+			//수정 시. 댓글정보 세팅
+			if(mode =='update'){
+				node.find('.cm_w textarea').val(node.find('.comment').text());
+				node.find('button').data('mode', 'update').text('수정');
+				
+				if(obj.data('secret') == 'Y'){
+					node.find('.rock').addClass('on');
+				}
+			}else{//등록시 초기화
+				node.find('.cm_w textarea').val('');
+				node.find('button').data('mode','insert').text('등록');
+			}
+			node.find('.cm_w').css('display', (obj.hasClass('on')) ? '':'none');
+			node.find('.cm_w textarea').focus();
+			_this.bindEvent();
+		};
+		
+		this.pagination = function(p){
+			var str = '';
+			if(p != undefined && p != null){
+				var prev = p.firstPageNoOnPageList > p.pageSize ? (p.firstPageNoOnPageList-1) : p.firstPageNo;
+				var next = p.lastPageNoOnPageList < p.totalPageCount ? (p.lastPageNoOnPageList+1) : p.lastPageNo;
+				var strtNo = parseInt(p.firstPageNoOnPageList);
+				var endNo = parseInt(p.lastPageNoOnPageList)+1;
+				
+				str+='<ul>';
+					if(p.totalPageCount > p.pageSize){
+						str+='<li class="first" data-value="' + p.firstPageNo + '">';
+						str+='<a href="javascript:;">처음으로</a></li>';
+						str+='<li class="prev" data-value="'+prev+'">';
+						str+='<a href="javascript:;" aria-label="prev">이전</a>';
+						str+='</li>';
+					}
+				
+				for(var i= strtNo; i<endNo; i++){
+					str+='<li class="'+((i == p.currentPageNo) ? 'active':'')+'" data-value="'+i+'">';
+					str+='<a href="javascript:;">'+i+'</a>';
+					str+='</li>';
+				}
+				
+				if(p.totalPageCount > p.pageSize){
+					str+='<li class="next" data-value="'+next+'">';
+					str+='<a href="javascript:;" aria-label="next">다음</a>';
+					str+='</li>';
+					str+='<li class="end" data-value="'+p.lastPageNo+'">';
+					str+='<a href="javascript:;" aria-label="lastPage">마지막으로</a>';
+					str+='</li>';
+				}
+				str+='</ul>';
+			} //p
+			
+			$('#replyPage').children().remove().end().append(str);
+			
+			$('#replyPage li').bind('click', function(){
+				replyInfo.pageIndex = $(this).data('value');
+				_this.getList(replyInfo);
+			});
+		}; //pagination
+	};
+	
+
+	//티켓
+	$.funcTicket = function(){
+		
+		var _this = this;
+		var ticketInfo = {};
+		this.ticketSeat = {};
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			
+			ticketInfo = {
+				ticketInnb					: settings.bbsInnb || '',
+				pageIndex					: settings.pageIndex || 1,
+				pageSize					: settings.pageSize || 8,
+				srchwrd						: settings.srchwrd || '',
+				srchcnd						: settings.srchcnd || '',
+				gridArea					: settings.gridArea || '',
+				formId						: settings.formId || 'form',
+				viewUrl						: settings.viewUrl || '',
+				sortType					: settings.sortType || '',
+				init							: settings.init || true
+			};
+			
+			_this.bindEvent();
+			return _this.setSearchParam(ticketInfo);
+		};
+		
+		this.bindEvent = function(){
+			
+			$('.more-link, .btn-view, .btn-search').unbind('click');
+			//더보기 클릭 이벤트
+			$('.more-link').bind('click', function(){
+				ticketInfo.init = false;	//초기화 해제
+				ticketInfo.pageIndex++;
+				$('#pageIndex').val(ticketInfo.pageIndex);
+				
+				_this.getList(ticketInfo);
+			});
+			
+			//링크 클릭 이벤트
+			$('.btn-view').bind('click', function(){
+				_this.moveToView($(this));
+			});
+			
+			//검색 클릭 이벤트
+			$('.btn-search').bind('click', function(){
+				_this.setSearchParam();
+			});
+			
+			//검색어 입력 후 엔터처리 이벤트
+			$('#srchwrd').unbind('keypress');
+			$('#srchwrd').bind('keypress', function(e){
+				if(e.keyCodelo == 13){
+					_this.setSearchParam();
+				}
+			});
+			
+			//정렬순서 이벤트
+			if(ticketInfo.sortType != ''){
+				$('.sort a').unbind('click');
+				$('.sort a').bind('click', function(i){
+					var li = $(this);
+					$(li).siblings().removeClass("on");
+					$(li).addClass('on');
+					ticketInfo.sortType = $(li).data('sort');
+					_this.setSearchParam();
+				});
+			}
+			
+			//회차 선택 이벤트
+			$('.ticket_select').on('click','.rtatTime, .rtatde', function(){
+				$(this).addClass('on').siblings().removeClass('on');
+				//날짜선택 시
+				if($(this).hasClass('rtatde')){
+			    	var timesArr = $(this).data('time').split('^');
+			    	var str = '';
+			    	for (var i=0; i < timesArr.length; i++){
+			    		var time_txt = timesArr[i];
+			    		time_txt = time_txt.replace(':', '시 ')+'분';
+			    		str +='<span class="'+((i == 0) ? 'on':'')+' rtatTime" data-time="'+timesArr[i]+'">'+time_txt+'</span>';
+			    	}
+			    	$('#div-rtat-time').empty().append(str);
+				}
+			});
+			
+			$('#callTicketPop').unbind('click');
+			$('#callTicketPop').on('click', function(){
+				_this.callTicketPop();
+			});
+		};
+		
+		this.callTicketPop = function(){
+			if(!$.fn.session.checkStatusLogin(true)){
+				return;
+			}
+			
+			if(_gl_session.certifiedYn != "Y"){
+				alert("마이페이지에서 본인인증 확인 후 티켓예매가 가능합니다.");
+				return;
+			}
+			
+			var tp = window.open("", "popForm", "width=1050, height=900, resizable=no, scrollbars=no, status=no;");
+			//console.log('bind');
+			
+			$('#rtatde').val($('.rtatde').filter('.on').data('date'));
+			$('#rtatTime').val($('.rtatTime').filter('.on').data('time'));
+			
+			$('#ticketForm').prop('action', '/web/popup/ticketStep01.do')
+			.prop('method', 'post')
+			.prop('target', 'popForm')
+			.submit();
+			
+			var popupTick = setInterval(function() {
+		      if(tp.closed){
+		        clearInterval(popupTick);
+		        console.log('window closed!');
+		        console.log('orderInnb',$('#orderInnb').val());
+		      }
+		    }, 500);
+		};
+		
+		/*this.ajaxCall = function(params){
+			$.callAjax({url:'/web/ticket/getTicketList.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.makeRows(data.result);
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};*/
+		
+		this.getReserveList = function(params){
+			$.callAjax({url:'/web/ticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					var s = data.result.list;
+					if(s != undefined){
+						var h = _this.getPrfplc(params.prfplcInnb)+'_'+params.mapKey.split('-')[1];
+						for(var i=0; i < s.length; i++){
+							$('.'+h+' li.'+s[i].seatLocation).removeClass('sale').addClass('sold');
+						}
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.getPrfplc = function(prfplcInnb){
+			var hall_id = '';
+			switch(prfplcInnb){
+				case 'PP001' :  hall_id = 'kyung'; break;
+				case 'PP002' :  hall_id = 'olympic'; break;
+				case 'PP003' :  hall_id = 'woori'; break;
+				default : '';
+			} 
+			return hall_id;
+		};
+		
+		this.insertReserve = function(params){
+			$.callAjax({url:'/web/ticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					var orderInnb = data.result.orderInnb;
+					if(orderInnb != ''){
+						$('#orderInnb').val(orderInnb);
+						$('#hallForm').prop('action','/web/popup/ticketStep02.do').submit();
+					}else{
+						alert('예매실패!');
+						return;
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.cancelReserve = function(params){
+			if(!confirm('현재 선택한 좌석정보가 삭제됩니다. 이동하시겠습니까?')){
+				return;
+			}
+			$.callAjax({url:'/web/ticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					$('#orderInnb').val('');
+					$('#hallForm').prop('action','/web/popup/ticketStep01_01.do').submit();
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.setSearchParam = function(){
+			ticketInfo.pageIndex = 1;
+			ticketInfo.init = true;
+			ticketInfo.srchwrd = ($('#srchwrd').length) ? $('#srchwrd').val() : '';
+			ticketInfo.srchcnd = ($('#srchcnd').length) ? $('#srchcnd').val() : '';
+			_this.getList(ticketInfo);
+		};
+		
+		this.moveToView = function(o){
+			$('#ticketInnb').val($(o).data('value'));
+			$(ticketInfo.formId).prop('action', ticketInfo.viewUrl)
+			.submit();
+		};
+		
+		this.getList = function(params){
+			$.callAjax({url:'/web/ticket/getTicketList.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.makeRows(data.result);
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.makeRows = function(data){
+			var str = '';
+			var list = data.ticketList;
+			if(list != undefined && list != ''){
+				for(var i in list){
+					var o = list[i];
+					var img = '/img/default_image.jpg';
+					if(o.thumbPath != null && o.thumbPath != ''){
+						img = _gl_session.imgServer + o.thumbPath;
+					}
+					str +='<li>';
+						str +='<div class="thumb">';
+							str +='<a href="javascript:;" class="btn-view" data-value="'+o.ticketInnb+'">';
+								str +='<img src="'+img+'" alt="">';
+							str +='</a>';
+						str +='</div>';
+						str +='<div class="info">';
+							str +='<p class="subject">';
+								str +='<a href="javascript:;" class="btn-view" data-value="'+o.ticketInnb+'">'+o.ticketTitle+'</a>';
+							str +='</p>';
+							str +='<p class="when">'+o.pblprfrBgnde+' ~ '+o.pblprfrEndde+'</p>';
+							str +='<p class="where">'+o.prfplcTitle+'</p>';
+							str +='<p class="icon">';
+								if(o.status == 'A' || o.status == 'B'){
+									str +='<span class="sale">'+((o.status == 'A') ? '오픈전':'판매중')+'</span>';
+								}
+								if(o.exSale == 'Y'){
+									str +='<span class="ex_sale">단독판매</span>';
+								}
+								if(o.preSale == 'Y'){
+									str +='<span class="pre_sale">선예매</span>';
+								}
+								if(o.recomd == 'Y'){
+									str +='<span class="recomd">추천</span>';
+								}
+							str +='</p>';
+						str +='</div>';
+					str +='</li>';
+				}
+			}else{
+				str = '<div class="no-data">조회된 데이터가 없습니다.</div>';
+			}
+			//초기화 로딩 or 더보기
+			if(ticketInfo.init){
+				$(ticketInfo.gridArea).html(str);
+			}else{
+				$(ticketInfo.gridArea).append(str);
+			}
+			//더보기 버튼
+			var nextCnt = data.totalCnt - ticketInfo.pageIndex * ticketInfo.pageSize;
+			$('.more-link').css('display', (nextCnt > 0) ? '':'none');
+			_this.bindEvent();
+		};
+	};
+	
+	//string 처리
+	$.stringFunc = {
+		comma : function(str){
+			return (str == null) ? '' : str.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+		,br : function(str){
+			return (str == null) ? '' : str.replace(/(\n|\\n|\\\n|\\\\n|\r\n)/g, '<br>');
+		}
+		,number : function(str){
+			return (str == null) ? '' :  str.replace(/[^(0-9)]/gi,'');
+		}
+		,caret : function(str){
+			return (str == null) ? '' :  str.replace(/\^/g, '');
+		}
+		,slash : function(str){
+			return (str == null) ? '' :  str.replace(/\//g,'');
+		}
+		,isEmpty : function(str){
+			if(str !=undefined && str != null && str != ''){
+				return false;
+			}else{
+				return true;
+			}
+		}
+		,isExistVal : function(str){
+			if(!this.isEmpty(str)){
+				if(this.trim(str).length == 0){
+					return false;
+				}
+				return true;
+			}else{
+				return false;
+			}
+		}
+		,trim : function(str){
+			if(!this.isEmpty(str)){
+				return str.replace(/^\s+|\s+$/g, '');
+			}else{
+				return '';
+			}
+		}
+		,nvl : function(str, rp){
+			if(str !=undefined && str != null && str != ''){
+				return str;
+			}
+			return rp;
+		}
+	};
+	
+	
+	$.getTypeName = function(type){
+		var name = '';
+		
+		switch(type){
+		
+			case "list" : name = '리스트';
+							break;
+			case "insert" : name = '등록';
+							break;
+			case "answer" : name = '등록';
+							break;
+			case "view" : name = '상세';
+							break;
+			case "update" : name = '수정';
+							break;
+			case "delete" : name = '삭제';
+							break;
+			case "cancle" : name = '취소';
+							break;
+			default : name = 'Invalid Type'; 
+							break;
+		}
+		
+		return name;
+	}
+	
+	/* --------------------------------------------------------------------------------------------------------
+	 * @functionName : $.fn.fileComponent
+	 * @functionDesc : 첨부파일 제어 함수
+	 * @param opts : 첨부파일 초기화 파라미터
+	 * @Example :
+	 *		 				$.fn.fileComponent.init({
+							  	fileClass : '.file-select'
+								, preview : true
+								, accept : 'image/*'
+								//, accept : 'jpg, gif'
+						});
+						//파일 선택 (미리보기 시 : data-img-target에 id 값 입력해야함)
+						<input type="file" class="file-select" id="thumb_path" name="uploadFile" value="" data-imgtarget = "thumb_path_view"/>
+						//선택 후 미리보기 (이미지 파일만 지원)
+						<img id="thumb_path_view" src="${contentInfo.thumb_path}" >
+	 * 
+	--------------------------------------------------------------------------------------------------------- */
+	var fileOpts = {  fileClass : '' //첨부파일 클래스 지정 : fileClass
+							, maxFileCo : 0 //첨부파일 최대 갯수 : maxFileCo
+							, accept : '' //허용 가능 확장자 : accept (image/*) or 'jpg, gif'
+							, maxFileSize : '' //첨부파일 최대 용량 : maxFileSize
+							, maxImgWidth : '' //이미지 사이즈 체크 : maxImgWidth
+							, maxImgHeight : '' //이미지 사이즈 체크 : maxImgHeight
+							, preview : false }; //이미지 미리보기 여부 : preview
+	$.fn.fileComponent = {
+			
+			init : function (opts) {
+				
+				fileOpts = opts;
+				
+				var el = $(fileOpts.fileClass);
+				
+				$(el).each(function(){
+					$(this).prop('accept', fileOpts.accept);
+				});
+				
+				$(el).on('change', function(){
+					$.fn.fileComponent.add($(this));
+				});
+				
+			}
+			, add : function (obj) {
+				
+				if($(obj).val() != ''){
+					
+					var ext = $(obj).val().split('.').pop().toLowerCase(); //확장자
+					
+					if(! this.checkSize($(obj)) ) return;
+					
+					if(! this.checkExt(ext, obj) ) return;
+					
+					var reader = new FileReader();
+					
+					reader.onload = function(e){
+						
+						//이미지 일 때만 미리보기
+						if(fileOpts.preview){
+							$('#'+obj.data('preview-target'))
+							.css('display', '')
+							//.css('width', '100%')
+							.prop('src',e.target.result);
+						}
+					}
+					
+					reader.readAsDataURL($(obj)[0].files[0]);
+					
+					var label = $(obj).val().replace(/\\/g, '/').replace(/.*\//, '');
+					$('#'+$(obj).data('display-target')).val(label);
+				}
+				
+			}
+			, checkSize : function (target) {
+				
+				var maxSize = (fileOpts.maxFileSize != undefined && fileOpts.maxFileSize != '') ? fileOpts.maxFileSize : 5;
+				maxSize  = Number(maxSize) * 1024 * 1024    // 기본 5MB
+				
+				var fileSize = 0;
+				var browser=navigator.appName;
+				
+				if (browser=="Microsoft Internet Explorer")
+				{
+					var oas = new ActiveXObject("Scripting.FileSystemObject");
+					fileSize = oas.getFile( target.value ).size;
+				}
+				else
+				{
+					fileSize = $(target)[0].files[0].size;
+				}
+				
+				if(fileSize > maxSize)
+				{
+				    msg = '첨부파일 사이즈는 5MB 이내로 등록 가능합니다.';
+				    return this.cancle(msg, target);
+				}
+				return true;
+			}
+			, checkExt : function (ext, target) {
+				
+				if(fileOpts.accept == 'image/*') {
+					
+					var regex_img = /(gif|jpg|jpeg|png|bmp)$/;
+					
+					if(!regex_img.test(ext)){
+						msg = 'gif, png, jpg, jpeg ,bmp 파일만 업로드 할수 있습니다.';
+						return this.cancle(msg, target);
+					}
+					
+				}else{
+					
+					var acc = fileOpts.accept.split(',');
+
+					for (var i = 0; i < acc.length; i++) {
+						acc[i] = acc[i].trim();
+					 }
+					
+					if($.inArray(ext, acc) == -1) {
+						msg = acc.join(',')+' 파일만 업로드 할수 있습니다.';
+						return this.cancle(msg, target);
+					}
+				}
+				
+				return true;
+			}
+			, cancle : function (msg, obj) {
+				if(msg != '') alert(msg);
+				
+				if(fileOpts.preview){
+					$('#'+obj.data('preview-target'))
+					//.css('width', '100%')
+					.prop('src','');
+				}
+				
+				$(obj).val('');
+				return false;
+			}
+			, del : function () {
+				
+			}
+		};
+
+	//티켓
+	$.funcRticket = function(){
+		
+		var _this = this;
+		var ticketInfo = {};
+		this.ticketSeat = {};
+		this.myOrderList = null;
+		
+		this.init = function(opts){
+			var settings = $.extend({}, opts || {});
+			
+			ticketInfo = {
+				ticketInnb					: settings.bbsInnb || '',
+				pageIndex					: settings.pageIndex || 1,
+				pageSize					: settings.pageSize || 8,
+				srchwrd						: settings.srchwrd || '',
+				srchcnd						: settings.srchcnd || '',
+				gridArea					: settings.gridArea || '',
+				formId						: settings.formId || 'form',
+				viewUrl						: settings.viewUrl || '',
+				sortType					: settings.sortType || '',
+				init							: settings.init || true
+			};
+			
+			_this.bindEvent();
+			return _this.setSearchParam(ticketInfo);
+		};
+		
+		this.bindEvent = function(){
+			
+			$('.more-link, .btn-view, .btn-search').unbind('click');
+			//더보기 클릭 이벤트
+			$('.more-link').bind('click', function(){
+				ticketInfo.init = false;	//초기화 해제
+				ticketInfo.pageIndex++;
+				$('#pageIndex').val(ticketInfo.pageIndex);
+				
+				_this.getList(ticketInfo);
+			});
+			
+			//링크 클릭 이벤트
+			$('.btn-view').bind('click', function(){
+				_this.moveToView($(this));
+			});
+			
+			//검색 클릭 이벤트
+			$('.btn-search').bind('click', function(){
+				_this.setSearchParam();
+			});
+			
+			//검색어 입력 후 엔터처리 이벤트
+			$('#srchwrd').unbind('keypress');
+			$('#srchwrd').bind('keypress', function(e){
+				if(e.keyCodelo == 13){
+					_this.setSearchParam();
+				}
+			});
+			
+			//정렬순서 이벤트
+			if(ticketInfo.sortType != ''){
+				$('.sort a').unbind('click');
+				$('.sort a').bind('click', function(i){
+					var li = $(this);
+					$(li).siblings().removeClass("on");
+					$(li).addClass('on');
+					ticketInfo.sortType = $(li).data('sort');
+					_this.setSearchParam();
+				});
+			}
+			
+			//회차 선택 이벤트
+			$('.ticket_select').on('click','.rtatTime, .rtatde', function(){
+				$(this).addClass('on').siblings().removeClass('on');
+				//날짜선택 시
+				if($(this).hasClass('rtatde')){
+			    	var timesArr = $(this).data('time').split('^');
+			    	var str = '';
+			    	for (var i=0; i < timesArr.length; i++){
+			    		var time_txt = timesArr[i];
+			    		time_txt = time_txt.replace(':', '시 ')+'분';
+			    		str +='<span class="'+((i == 0) ? 'on':'')+' rtatTime" data-time="'+timesArr[i]+'">'+time_txt+'</span>';
+			    	}
+			    	$('#div-rtat-time').empty().append(str);
+				}
+			});
+			
+			$('#callTicketPop').unbind('click');
+			$('#callTicketPop').on('click', function(){
+				_this.callTicketPop();
+			});
+		};
+		
+		this.callTicketPop = function(){
+			if(!$.fn.session.checkStatusLogin(true)){
+				return;
+			}
+			
+			/* if(_gl_session.certifiedYn != "Y"){
+				alert("마이페이지에서 본인인증 확인 후 티켓예매가 가능합니다.");
+				return;
+			} */
+			
+			var tp = window.open("", "popForm", "width=1050, height=755, resizable=no, scrollbars=no, status=no;");
+			//console.log('bind');
+			
+			$('#rtatde').val($('.rtatde').filter('.on').data('date'));
+			$('#rtatTime').val($('.rtatTime').filter('.on').data('time'));
+			
+			$('#ticketForm').prop('action', '/web/rticketp/ticketStep01.do')
+			.prop('method', 'post')
+			.prop('target', 'popForm')
+			.submit();
+			
+			var popupTick = setInterval(function() {
+		      if(tp.closed){
+		        clearInterval(popupTick);
+		        console.log('window closed!');
+		        console.log('orderInnb',$('#orderInnb').val());
+		      }
+		    }, 500);
+		};
+		
+		/*this.ajaxCall = function(params){
+			$.callAjax({url:'/web/rticket/getTicketList.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.makeRows(data.result);
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};*/
+		
+		this.getReserveList = function(params){
+			$.callAjax({url:'/web/rticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.myOrderList = data.result.myOrderList;
+					var h = _this.getPrfplc(params.prfplcInnb)+'_'+params.mapKey.split('-')[1];
+					
+					if($('#rtype').val() == '2'){
+						if (typeof data.result.rseatList != 'undefined' && data.result.rseatList != null && data.result.rseatList.length > 0) {
+							for (var i in data.result.rseatList) {
+								$('.'+h+' li.'+data.result.rseatList[i].seatLocation).addClass('rand');
+								$('.'+h+' li.'+data.result.rseatList[i].seatLocation).prop('title', data.result.rseatList[i].orderCount);
+								$('.'+h+' li.'+data.result.rseatList[i].seatLocation).tooltip();
+							}
+						}
+						if(data.result.orderList != undefined && data.result.orderList != null && data.result.orderList.length > 0){
+							for(var i=0; i < data.result.orderList.length; i++){
+								if (!$('.'+h+' li.'+data.result.orderList[i].seatLocation).hasClass('rand')) {
+									$('.'+h+' li.'+data.result.orderList[i].seatLocation).removeClass('sale').addClass('sold');
+								}
+							}
+						}
+					} else {
+						$('.'+h+' li').removeClass('sold').addClass('sale').addClass('rand');
+						if(data.result.orderList != undefined && data.result.orderList != null && data.result.orderList.length > 0){
+							for(var i=0; i < data.result.orderList.length; i++){
+								$('.'+h+' li.'+data.result.orderList[i].seatLocation).prop('title', data.result.orderList[i].orderCount);
+								$('.'+h+' li.'+data.result.orderList[i].seatLocation).tooltip();
+							}
+						}
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.getPrfplc = function(prfplcInnb){
+			var hall_id = '';
+			switch(prfplcInnb){
+				case 'PP001' :  hall_id = 'kyung'; break;
+				case 'PP002' :  hall_id = 'olympic'; break;
+				case 'PP003' :  hall_id = 'woori'; break;
+				default : '';
+			} 
+			return hall_id;
+		};
+		
+		this.insertReserve = function(params){
+			$.callAjax({url:'/web/rticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					var orderInnb = data.result.orderInnb;
+					if(orderInnb != ''){
+						alert('정상 예매 처리되었습니다.');
+						opener.location.href = '/web/rticket/myInfo.do';
+						self.close();
+					}else{
+						alert('예매실패!');
+						return;
+					}
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.cancelReserve = function(params){
+			if(!confirm('현재 선택한 좌석정보가 삭제됩니다. 이동하시겠습니까?')){
+				return;
+			}
+			$.callAjax({url:'/web/rticket/ticketProc.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					$('#orderInnb').val('');
+					$('#hallForm').prop('action','/web/rticketp/ticketStep01_01.do').submit();
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.setSearchParam = function(){
+			ticketInfo.pageIndex = 1;
+			ticketInfo.init = true;
+			ticketInfo.srchwrd = ($('#srchwrd').length) ? $('#srchwrd').val() : '';
+			ticketInfo.srchcnd = ($('#srchcnd').length) ? $('#srchcnd').val() : '';
+			_this.getList(ticketInfo);
+		};
+		
+		this.moveToView = function(o){
+			$('#ticketInnb').val($(o).data('value'));
+			$(ticketInfo.formId).prop('action', ticketInfo.viewUrl)
+			.submit();
+		};
+		
+		this.getList = function(params){
+			$.callAjax({url:'/web/rticket/getTicketList.do'
+							,data:params
+							,type:'POST'
+			}).done(function (data){
+				if(data.result.code == 'error'){
+					alert(data.result.message);
+					return;
+				}else{
+					_this.makeRows(data.result);
+				}
+			}).fail(function(err){
+				alert("error:" + err);
+				return;
+			});
+		};
+		
+		this.makeRows = function(data){
+			var str = '';
+			var list = data.ticketList;
+			if(list != undefined && list != ''){
+				for(var i in list){
+					var o = list[i];
+					var img = '/img/default_image.jpg';
+					if(o.thumbPath != null && o.thumbPath != ''){
+						img = _gl_session.imgServer + o.thumbPath;
+					}
+					str +='<li>';
+						str +='<div class="thumb" style="height: 370px;">';
+							str +='<a href="javascript:;" class="btn-view" data-value="'+o.ticketInnb+'" style="display: initial;">';
+								str +='<img src="'+img+'" alt="'+o.ticketTitle+'" style="height: 100%;">';
+							str +='</a>';
+						str +='</div>';
+						str +='<div class="info">';
+							str +='<p class="subject">';
+								str +='<a href="javascript:;" class="btn-view" data-value="'+o.ticketInnb+'">'+o.ticketTitle+'</a>';
+							str +='</p>';
+							str +='<p class="when">'+o.pblprfrBgnde+' ~ '+o.pblprfrEndde+'</p>';
+							str +='<p class="where">'+o.prfplcTitle+'</p>';
+							str +='<p class="icon">';
+								if(o.status == 'A' || o.status == 'B'){
+									str +='<span class="sale">'+((o.status == 'A') ? '오픈전':'판매중')+'</span>';
+								}
+								if(o.exSale == 'Y'){
+									str +='<span class="ex_sale">단독판매</span>';
+								}
+								if(o.preSale == 'Y'){
+									str +='<span class="pre_sale">선예매</span>';
+								}
+								if(o.recomd == 'Y'){
+									str +='<span class="recomd">추천</span>';
+								}
+							str +='</p>';
+						str +='</div>';
+					str +='</li>';
+				}
+			}else{
+				str = '<div class="no-data">조회된 데이터가 없습니다.</div>';
+			}
+			//초기화 로딩 or 더보기
+			if(ticketInfo.init){
+				$(ticketInfo.gridArea).html(str);
+			}else{
+				$(ticketInfo.gridArea).append(str);
+			}
+			//더보기 버튼
+			var nextCnt = data.totalCnt - ticketInfo.pageIndex * ticketInfo.pageSize;
+			$('.more-link').css('display', (nextCnt > 0) ? '':'none');
+			_this.bindEvent();
+		};
+	};
+	
+
+})(jQuery);
